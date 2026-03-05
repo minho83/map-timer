@@ -18,9 +18,9 @@ export function FullDashboard() {
   const roi = useCaptureStore((s) => s.roi);
 
   return (
-    <div className="flex gap-4 p-4 min-h-[calc(100vh-64px)]">
+    <div className="flex gap-3 p-3 min-h-[calc(100vh-48px)]">
       {/* Left Panel - Capture & OCR Settings */}
-      <div className="w-[340px] shrink-0 space-y-3">
+      <div className="w-[320px] shrink-0 space-y-2">
         <ScreenPreview
           videoRef={videoRef}
           isCapturing={isCapturing}
@@ -33,9 +33,9 @@ export function FullDashboard() {
       </div>
 
       {/* Right Panel - Timer & Alarms */}
-      <div className="flex-1 space-y-4 min-w-0">
+      <div className="flex-1 space-y-3 min-w-0">
         {/* Timer */}
-        <div className="bg-bg-secondary rounded-lg border border-border p-6 space-y-4">
+        <div className="bg-bg-secondary rounded-lg border border-border p-4 space-y-3">
           <TimerDisplay displayTime={displayTime} />
           <TimerControls
             timerState={timerState}
@@ -47,13 +47,13 @@ export function FullDashboard() {
         </div>
 
         {/* Lap History */}
-        <div className="bg-bg-secondary rounded-lg border border-border p-4">
-          <h3 className="text-sm font-semibold text-text-secondary mb-2">구간 기록</h3>
+        <div className="bg-bg-secondary rounded-lg border border-border p-3">
+          <h3 className="text-xs font-semibold text-text-secondary mb-1.5">구간 기록</h3>
           <LapHistory laps={laps} />
         </div>
 
         {/* Alarms */}
-        <div className="bg-bg-secondary rounded-lg border border-border p-4">
+        <div className="bg-bg-secondary rounded-lg border border-border p-3">
           <AlarmPanel />
         </div>
       </div>

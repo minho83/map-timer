@@ -1,7 +1,10 @@
 export const t = {
   // App
-  appTitle: '맵 타이머',
-  appSubtitle: '어둠의전설 맵 이동 타이머',
+  appTitle: '혼탑타이머',
+  appSubtitle: '혼돈의탑 타이머',
+  credit: '제작: 밀떡밀떡',
+  triggerDelayNotice: '시작트리거 후 ~1초 지연 가능',
+  help: '도움말',
 
   // Timer
   start: '시작',
@@ -112,4 +115,14 @@ export const t = {
   shortcutReset: 'R: 초기화',
   shortcutMode: 'M: 모드 전환',
   shortcutDismiss: 'Esc: 알람 해제',
+
+  // Help
+  helpTitle: '혼탑타이머 도움말',
+  helpBasicUsage: '기본 사용법',
+  helpBasicUsageDesc: '1. "화면 공유 시작"을 클릭하여 게임 창을 선택합니다.\n2. "ROI 설정"을 클릭하고 맵 이름이 표시되는 영역을 드래그합니다.\n3. "감지 시작"을 클릭하면 맵 변경을 자동으로 감지합니다.\n4. 타이머를 시작하면 맵이 변경될 때마다 자동으로 구간이 기록됩니다.',
+  helpTriggers: 'OCR 트리거',
+  helpTriggersDesc: '시작 트리거: 해당 텍스트가 감지되면 타이머가 자동 시작됩니다.\n종료 트리거: 해당 텍스트가 감지되면 타이머가 자동 정지됩니다.\n경고 트리거: 해당 텍스트가 감지되면 경고음이 울립니다.',
+  helpAlarms: '알람 기능',
+  helpAlarmsDesc: '구간 시간이 설정한 시간을 초과하면 알람이 울립니다.\n시각 효과(깜빡임, 색상 변경, 오버레이)를 개별 설정할 수 있습니다.',
+  helpShortcuts: '키보드 단축키',
 } as const;
