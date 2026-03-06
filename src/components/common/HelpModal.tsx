@@ -32,8 +32,16 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           {t.helpBasicUsageDesc}
         </Section>
 
+        <Section title={t.helpROI}>
+          {t.helpROIDesc}
+        </Section>
+
         <Section title={t.helpTriggers}>
           {t.helpTriggersDesc}
+        </Section>
+
+        <Section title={t.helpPresets}>
+          {t.helpPresetsDesc}
         </Section>
 
         <Section title={t.helpAlarms}>

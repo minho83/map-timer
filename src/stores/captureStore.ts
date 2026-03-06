@@ -12,10 +12,11 @@ export interface TriggerConfig {
   warningTriggers: string[];
 }
 
-/** 트리거 프리셋 */
+/** 트리거 프리셋 (ROI 좌표 포함 가능) */
 export interface TriggerPreset {
   name: string;
   config: TriggerConfig;
+  roi?: ROIRect | null;
 }
 
 const DEFAULT_TRIGGER_CONFIG: TriggerConfig = {
@@ -107,7 +108,7 @@ export const useCaptureStore = create<CaptureStore>()(
         set((s) => ({
           presets: [
             ...s.presets.filter((p) => p.name !== preset.name),
-            preset,
+            { ...preset, roi: preset.roi !== undefined ? preset.roi : s.roi },
           ],
         })),
 
@@ -119,7 +120,11 @@ export const useCaptureStore = create<CaptureStore>()(
       loadPreset: (name) => {
         const preset = get().presets.find((p) => p.name === name);
         if (preset) {
-          set({ triggers: { ...preset.config } });
+          const updates: Partial<CaptureStore> = { triggers: { ...preset.config } };
+          if (preset.roi) {
+            updates.roi = preset.roi;
+          }
+          set(updates);
         }
       },
 
@@ -161,9 +166,9 @@ export const useCaptureStore = create<CaptureStore>()(
       },
 
       exportPresets: () => {
-        const { presets, triggers } = get();
+        const { presets, triggers, roi } = get();
         return JSON.stringify(
-          { currentConfig: triggers, presets },
+          { currentConfig: triggers, roi, presets },
           null,
           2
         );
