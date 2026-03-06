@@ -1,4 +1,4 @@
-import { createWorker, Worker } from 'tesseract.js';
+import { createWorker, type Worker } from 'tesseract.js';
 
 class OCRService {
   private worker: Worker | null = null;

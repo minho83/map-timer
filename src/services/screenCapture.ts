@@ -15,9 +15,7 @@ export class ScreenCaptureService {
 
   async startCapture(): Promise<MediaStream> {
     this.stream = await navigator.mediaDevices.getDisplayMedia({
-      video: {
-        cursor: 'never',
-      },
+      video: true,
       audio: false,
     });
 

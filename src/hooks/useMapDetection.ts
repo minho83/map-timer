@@ -25,11 +25,9 @@ const MIN_OCR_SPLIT_TIME = 500;
 
 export function useMapDetection() {
   const captureStore = useCaptureStore();
-  const timerState = useTimerStore((s) => s.state);
   const timerStart = useTimerStore((s) => s.start);
   const timerStop = useTimerStore((s) => s.stop);
   const addLap = useTimerStore((s) => s.addLap);
-  const getLaps = useTimerStore((s) => s.laps);
   const getElapsed = useTimerStore((s) => s.getElapsed);
   const { sensitivity, detectionInterval, debounceDelay, autoDetect } = useSettingsStore();
 
