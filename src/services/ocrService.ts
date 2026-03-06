@@ -30,6 +30,12 @@ class OCRService {
     }
   }
 
+  /**
+   * Max width for OCR input. High-res captures (4K+) produce ROI images
+   * too large for Tesseract to process reliably. Scale down to this width.
+   */
+  private static readonly MAX_OCR_WIDTH = 800;
+
   async recognize(imageData: ImageData): Promise<string> {
     if (!this.worker || !this.ready) {
       await this.init();
@@ -37,12 +43,27 @@ class OCRService {
     if (!this.worker) return '';
 
     try {
-      // Convert ImageData to canvas data URL
       const canvas = document.createElement('canvas');
-      canvas.width = imageData.width;
-      canvas.height = imageData.height;
       const ctx = canvas.getContext('2d')!;
-      ctx.putImageData(imageData, 0, 0);
+
+      // Scale down large ROI images for reliable OCR
+      if (imageData.width > OCRService.MAX_OCR_WIDTH) {
+        const scale = OCRService.MAX_OCR_WIDTH / imageData.width;
+        canvas.width = Math.round(imageData.width * scale);
+        canvas.height = Math.round(imageData.height * scale);
+
+        // Draw original to temp canvas, then scale down
+        const tmp = document.createElement('canvas');
+        tmp.width = imageData.width;
+        tmp.height = imageData.height;
+        tmp.getContext('2d')!.putImageData(imageData, 0, 0);
+
+        ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height);
+      } else {
+        canvas.width = imageData.width;
+        canvas.height = imageData.height;
+        ctx.putImageData(imageData, 0, 0);
+      }
 
       const { data } = await this.worker.recognize(canvas);
       return data.text.trim();
