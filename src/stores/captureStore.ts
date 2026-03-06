@@ -19,8 +19,8 @@ export interface TriggerPreset {
 }
 
 const DEFAULT_TRIGGER_CONFIG: TriggerConfig = {
-  startTriggers: ['혼돈의탑', '영겁의탑'],
-  stopTriggers: ['보상룸', '마을'],
+  startTriggers: ['혼돈의탑5-1'],
+  stopTriggers: ['보상룸'],
   warningTriggers: [],
 };
 
