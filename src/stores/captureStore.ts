@@ -185,6 +185,7 @@ export const useCaptureStore = create<CaptureStore>()(
         ocrEnabled: state.ocrEnabled,
         triggers: state.triggers,
         presets: state.presets,
+        roi: state.roi,
       }),
       migrate: (persisted: unknown, version: number) => {
         if (version === 0) {
