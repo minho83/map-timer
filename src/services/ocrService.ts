@@ -2,31 +2,36 @@ import { createWorker, type Worker } from 'tesseract.js';
 
 class OCRService {
   private worker: Worker | null = null;
-  private initializing = false;
+  private initPromise: Promise<void> | null = null;
   private ready = false;
 
   async init(): Promise<void> {
-    if (this.ready || this.initializing) return;
-    this.initializing = true;
+    // If already ready, skip
+    if (this.ready && this.worker) return;
 
+    // If init is already in progress, wait on the same promise
+    if (this.initPromise) return this.initPromise;
+
+    this.initPromise = this._doInit();
+    return this.initPromise;
+  }
+
+  private async _doInit(): Promise<void> {
     try {
+      console.log('[OCR] Initializing worker...');
       this.worker = await createWorker('kor+eng', undefined, {
         logger: (msg) => {
           if (msg.status === 'recognizing text') return;
-          console.log('[OCR]', msg.status, msg.progress);
+          console.log('[OCR]', msg.status, Math.round((msg.progress ?? 0) * 100) + '%');
         },
-        workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js',
-        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@v7.0.0',
-        langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js-ocr-languages@latest/tessdata',
-        workerBlobURL: true,
       });
       this.ready = true;
-      console.log('[OCR] Initialization complete');
+      console.log('[OCR] Worker ready');
     } catch (err) {
-      console.error('[OCR] Initialization failed:', err);
+      console.error('[OCR] Init failed:', err);
       this.ready = false;
-    } finally {
-      this.initializing = false;
+      this.worker = null;
+      this.initPromise = null; // Allow retry on failure
     }
   }
 
@@ -80,33 +85,23 @@ class OCRService {
   }
 
   async recognize(imageData: ImageData): Promise<string> {
-    if (!this.worker || !this.ready) {
-      await this.init();
+    await this.init();
+    if (!this.worker) {
+      console.warn('[OCR] Worker not available');
+      return '';
     }
-    if (!this.worker) return '';
 
     try {
       const canvas = this.preprocessForOCR(imageData);
-      console.log(`[OCR] Processing ${imageData.width}x${imageData.height} → ${canvas.width}x${canvas.height}`);
+      console.log(`[OCR] Recognizing ${imageData.width}x${imageData.height} → ${canvas.width}x${canvas.height}`);
       const { data } = await this.worker.recognize(canvas);
-      return data.text.trim();
+      const text = data.text.trim();
+      if (text) {
+        console.log(`[OCR] Result: "${text}" (confidence: ${Math.round(data.confidence)}%)`);
+      }
+      return text;
     } catch (err) {
-      console.warn('OCR recognition failed:', err);
-      return '';
-    }
-  }
-
-  async recognizeFromCanvas(canvas: HTMLCanvasElement): Promise<string> {
-    if (!this.worker || !this.ready) {
-      await this.init();
-    }
-    if (!this.worker) return '';
-
-    try {
-      const { data } = await this.worker.recognize(canvas);
-      return data.text.trim();
-    } catch (err) {
-      console.warn('OCR recognition failed:', err);
+      console.warn('[OCR] Recognition failed:', err);
       return '';
     }
   }
@@ -116,15 +111,12 @@ class OCRService {
       await this.worker.terminate();
       this.worker = null;
       this.ready = false;
+      this.initPromise = null;
     }
   }
 
   get isReady(): boolean {
     return this.ready;
-  }
-
-  get isInitializing(): boolean {
-    return this.initializing;
   }
 }
 
