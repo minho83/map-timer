@@ -11,11 +11,19 @@ class OCRService {
 
     try {
       this.worker = await createWorker('kor+eng', undefined, {
-        logger: () => {},
+        logger: (msg) => {
+          if (msg.status === 'recognizing text') return;
+          console.log('[OCR]', msg.status, msg.progress);
+        },
+        workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@v7.0.0/dist/worker.min.js',
+        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@v7.0.0',
+        langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js-ocr-languages@latest/tessdata',
+        workerBlobURL: true,
       });
       this.ready = true;
+      console.log('[OCR] Initialization complete');
     } catch (err) {
-      console.warn('OCR initialization failed:', err);
+      console.error('[OCR] Initialization failed:', err);
       this.ready = false;
     } finally {
       this.initializing = false;
